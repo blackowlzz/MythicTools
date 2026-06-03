@@ -1,0 +1,20 @@
+# MythicTools Configuration
+# Author: blackowlzz | https://github.com/blackowlzz/MythicTools
+# License: GNU GPL v3 + Attribution — see LICENSE
+
+# ── General ───────────────────────────────────────────────────────────────────
+prefix: "&8[&dMythicTools&8] &r"
+
+# ── Expiry ────────────────────────────────────────────────────────────────────
+expiry:
+  enabled: true
+  # How often (ticks) to sweep inventories for expired tools. 1200 = 1 minute.
+  check-interval-ticks: 1200
+  remove-from-inventory: true
+
+# ── Update checker ────────────────────────────────────────────────────────────
+# Set to your Modrinth project ID or slug once the project is published.
+# Leave blank to disable the check.
+update-check:
+  enabled: true
+  modrinth-project-id: "mythictools"

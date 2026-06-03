@@ -1,0 +1,69 @@
+# MythicTools — Tool Definitions
+# Each entry under 'tools:' defines one custom tool.
+#
+# Fields:
+#   name               - Display name (& colour codes supported)
+#   material           - Base Minecraft material (must be a valid Material enum name)
+#   worth              - Monetary value shown in lore (used by SELL_CHEST ability)
+#   description        - List of lore lines shown below the worth
+#   abilities          - List of abilities: DRILL_3x3, PURPLE_PARTICLES, MULTITOOL,
+#                        TREE_CHOPPER, SELL_CHEST
+#   indestructible     - true / false
+#   efficiency-level   - Efficiency enchantment level applied (hidden in lore)
+#   efficiency-display - Numeric value shown as "+X" in lore (cosmetic; actual effect
+#                        comes from the enchantment above)
+
+tools:
+
+  amethyst_drill:
+    name: "&dAmethyst Drill"
+    material: NETHERITE_PICKAXE
+    worth: 330
+    description:
+      - "&7Breaks a 3x3 area around the mined block."
+      - "&7Purple particles on every break."
+    abilities:
+      - DRILL_3X3
+      - PURPLE_PARTICLES
+    indestructible: true
+    efficiency-level: 1
+    efficiency-display: 1
+
+  amethyst_multitool:
+    name: "&dAmethyst Multitool"
+    material: NETHERITE_PICKAXE
+    worth: 330
+    description:
+      - "&7Auto-switches between tools!"
+      - "&7Works as pickaxe, axe &8& &7shovel."
+    abilities:
+      - MULTITOOL
+    indestructible: true
+    efficiency-level: 1
+    efficiency-display: 1
+
+  amethyst_tree_chopper:
+    name: "&dAmethyst Tree Chopper"
+    material: NETHERITE_AXE
+    worth: 330
+    description:
+      - "&7Chop entire trees at once!"
+      - "&7Cascading break effect."
+    abilities:
+      - TREE_CHOPPER
+    indestructible: true
+    efficiency-level: 1
+    efficiency-display: 1
+
+  sell_axe:
+    name: "&6Sell Axe"
+    material: NETHERITE_AXE
+    worth: 330
+    description:
+      - "&7Right-click chests to sell contents!"
+      - "&7Instant profit."
+    abilities:
+      - SELL_CHEST
+    indestructible: true
+    efficiency-level: 1
+    efficiency-display: 1

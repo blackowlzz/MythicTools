@@ -1,0 +1,38 @@
+                    GNU GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
+
+ Copyright (C) 2026 blackowlzz <https://github.com/blackowlzz>
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+───────────────────────────────────────────────────────────────────────────────
+ADDITIONAL ATTRIBUTION REQUIREMENT (permitted under GPL-3.0 §7)
+───────────────────────────────────────────────────────────────────────────────
+As an additional requirement under GPL-3.0 section 7(b), any covered work
+that is publicly distributed (e.g. published on a server, Modrinth, Hangar,
+SpigotMC, or any other platform) MUST display clear and visible credit to the
+original project in ALL of the following locations:
+
+  1. IN-GAME — /mythictools about (or equivalent) must include the line:
+       "Based on MythicTools by blackowlzz — https://github.com/blackowlzz/MythicTools"
+
+  2. REPOSITORY / DOCS — The public README must contain a "Credits" section
+     that names the original project and links to this repository.
+
+  3. DISTRIBUTION PAGE — Any store page, Modrinth listing, forum post, or
+     website promoting the fork must mention MythicTools as the original work.
+
+Private use (non-public server installs) is exempt from this requirement.
+
+───────────────────────────────────────────────────────────────────────────────
+Full GPL-3.0 license text: https://www.gnu.org/licenses/gpl-3.0.txt

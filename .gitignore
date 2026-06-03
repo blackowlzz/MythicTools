@@ -1,0 +1,45 @@
+# Gradle
+build/
+.gradle/
+*.gradle
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+.gradletasknamecache
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+*.swp
+*.swo
+*~
+.classpath
+.project
+.settings/
+.c9/
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Build artifacts
+*.jar
+*.class
+*.war
+*.ear
+target/
+dist/
+
+# Local environment
+.env
+.env.local
+*.local
+
+# Temp files
+*.tmp
+*.bak

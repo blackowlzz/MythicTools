@@ -1,0 +1,55 @@
+# MythicTools — Item Sell Prices
+# Used by the SELL_CHEST ability (Sell Axe).
+# Format: MATERIAL_NAME: price_per_item
+# Material names must match Bukkit's Material enum exactly (uppercase).
+
+# ── Ores & minerals ────────────────────────────────────────────────────────
+COAL: 1.0
+IRON_INGOT: 5.0
+GOLD_INGOT: 8.0
+DIAMOND: 50.0
+EMERALD: 40.0
+NETHERITE_INGOT: 200.0
+LAPIS_LAZULI: 3.0
+REDSTONE: 1.5
+QUARTZ: 2.0
+AMETHYST_SHARD: 10.0
+
+# ── Raw ores ──────────────────────────────────────────────────────────────
+RAW_IRON: 4.0
+RAW_GOLD: 7.0
+RAW_COPPER: 2.0
+COPPER_INGOT: 3.0
+
+# ── Logs & wood ───────────────────────────────────────────────────────────
+OAK_LOG: 2.0
+BIRCH_LOG: 2.0
+SPRUCE_LOG: 2.0
+JUNGLE_LOG: 2.5
+ACACIA_LOG: 2.0
+DARK_OAK_LOG: 2.5
+MANGROVE_LOG: 2.5
+CHERRY_LOG: 3.0
+CRIMSON_STEM: 3.0
+WARPED_STEM: 3.0
+
+# ── Farm produce ──────────────────────────────────────────────────────────
+WHEAT: 1.0
+CARROT: 1.0
+POTATO: 1.0
+BEETROOT: 1.5
+SUGAR_CANE: 0.5
+PUMPKIN: 3.0
+MELON_SLICE: 0.5
+
+# ── Mob drops ─────────────────────────────────────────────────────────────
+BONE: 2.0
+STRING: 1.5
+SPIDER_EYE: 3.0
+ROTTEN_FLESH: 0.2
+GUNPOWDER: 4.0
+BLAZE_ROD: 15.0
+ENDER_PEARL: 20.0
+SLIME_BALL: 5.0
+GHAST_TEAR: 30.0
+MAGMA_CREAM: 8.0

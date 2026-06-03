@@ -1,0 +1,52 @@
+name: MythicTools
+version: '${project.version}'
+main: eu.blackowlzz.mythictools.MythicToolsPlugin
+api-version: '1.21'
+description: >
+  Custom Mythic Tools with special abilities (Drill, Multitool, Tree Chopper, Sell Axe).
+  Original project: MythicTools by blackowlzz — https://github.com/blackowlzz/MythicTools
+  License: GNU GPL v3 with attribution requirement.
+author: blackowlzz
+website: https://github.com/blackowlzz/MythicTools
+
+softdepend:
+  - Vault
+  - ShopGUIPlus
+  - EconomyShopGUI
+  - EconomyShopGUI-Pro
+  - Essentials
+
+commands:
+  mythictools:
+    description: MythicTools main command
+    usage: /mythictools <give|list|reload|about>
+    aliases: [ mt, mtools ]
+
+permissions:
+  mythictools.*:
+    description: All MythicTools permissions
+    default: op
+    children:
+      mythictools.give: true
+      mythictools.list: true
+      mythictools.reload: true
+
+  mythictools.give:
+    description: Give mythic tools to players
+    default: op
+
+  mythictools.list:
+    description: List all registered mythic tools
+    default: op
+
+  mythictools.reload:
+    description: Reload plugin configuration
+    default: op
+
+  mythictools.use:
+    description: Use mythic tool abilities
+    default: true
+
+  mythictools.update-notify:
+    description: Receive in-game update notifications
+    default: op
