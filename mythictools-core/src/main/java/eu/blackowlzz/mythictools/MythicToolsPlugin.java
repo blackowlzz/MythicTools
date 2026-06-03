@@ -58,12 +58,10 @@ public final class MythicToolsPlugin extends JavaPlugin {
             startExpiryTask();
             getLogger().info("[6/6] Listeners & commands registered.");
 
-            // Async version check
+            // Periodic version check
             if (configManager.isUpdateCheckEnabled()) {
-                String pid = configManager.getModrinthProjectId();
-                versionChecker = new VersionChecker(this, pid);
-                getServer().getPluginManager().registerEvents(versionChecker, this);
-                versionChecker.checkAsync();
+                versionChecker = new VersionChecker(this, configManager.getModrinthProjectId());
+                versionChecker.start();
             }
 
             getLogger().info("MythicTools v" + getDescription().getVersion() + " enabled.");
@@ -77,6 +75,7 @@ public final class MythicToolsPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (versionChecker != null) versionChecker.stop();
         MythicToolsAPI.clearProvider();
         getLogger().info("MythicTools disabled.");
     }

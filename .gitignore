@@ -1,3 +1,6 @@
+# Local scripts (not for distribution)
+push-to-github.ps1
+
 # Gradle
 build/
 .gradle/

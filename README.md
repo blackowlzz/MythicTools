@@ -83,6 +83,7 @@ expiry:
 update-check:
   enabled: true
   modrinth-project-id: "mythictools"  # Leave blank to disable
+  frequency-minutes: 360              # How often to check (default: 6 hours)
 ```
 
 ### `tools.yml`
@@ -105,10 +106,6 @@ tools:
     efficiency-level: 5              # Enchantment level (affects mining speed)
     efficiency-display: 26           # Display value in lore
 ```
-
-### `prices.yml` (Legacy — Not Used)
-
-*Ignored in v1.0.0+.* Pricing now comes from shop plugins (ShopGUI+, EconomyShopGUI, EssentialsX) or Vault economy. Remove this file if you had it from earlier versions.
 
 ---
 
@@ -239,13 +236,3 @@ If you publish a fork or derivative work (on Modrinth, SpigotMC, GitHub, etc.):
 - **Issues:** [GitHub Issues](https://github.com/blackowlzz/MythicTools/issues)
 - **Contributing:** Pull requests welcome — ensure code follows project style
 - **License questions:** See [LICENSE](LICENSE) for full terms
-
----
-
-## Acknowledgments
-
-Built for the Paper Minecraft server community. Inspired by mythic items and multi-use tools in RPG servers.
-
----
-
-**v1.0.0** — Initial release (2026-06-03)

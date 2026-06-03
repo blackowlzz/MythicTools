@@ -1,101 +1,177 @@
 package eu.blackowlzz.mythictools.util;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.*;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
 
-/**
- * Checks the Modrinth API for the latest MythicTools version and notifies
- * server operators both in console (on startup) and in-game (on join).
- *
- * Set {@code modrinth-project-id} in config.yml to your Modrinth project ID/slug.
- * Leave blank to disable the check.
- */
-public class VersionChecker implements Listener {
+public class VersionChecker {
 
-    private static final String API_BASE = "https://api.modrinth.com/v2/project/%s/version?loaders=[%%22paper%%22]";
-    private static final Pattern VERSION_PATTERN = Pattern.compile("\"version_number\"\\s*:\\s*\"([^\"]+)\"");
+    private static final String API_URL  = "https://api.modrinth.com/v2/project/%s/version";
+    private static final String PAGE_URL = "https://modrinth.com/plugin/%s";
 
     private final JavaPlugin plugin;
-    private final String currentVersion;
     private final String projectId;
+    private final HttpClient http;
 
-    private volatile String latestVersion = null;
-    private volatile boolean outdated = false;
+    private BukkitTask task;
+    private Listener joinListener;
+    private volatile String lastNotifiedVersion;
 
     public VersionChecker(JavaPlugin plugin, String projectId) {
-        this.plugin = plugin;
-        this.currentVersion = plugin.getDescription().getVersion();
+        this.plugin    = plugin;
         this.projectId = projectId;
+        this.http      = HttpClient.newHttpClient();
     }
 
-    public boolean isEnabled() { return projectId != null && !projectId.isBlank(); }
+    public void start() {
+        if (projectId == null || projectId.isBlank()) return;
 
-    public void checkAsync() {
-        if (!isEnabled()) return;
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            try {
-                String url = String.format(API_BASE, projectId);
-                HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("User-Agent",
-                        "MythicTools/" + currentVersion + " (github.com/blackowlzz/MythicTools)");
-                conn.setConnectTimeout(5_000);
-                conn.setReadTimeout(5_000);
+        long freqMinutes = plugin.getConfig().getLong("update-check.frequency-minutes", 360L);
+        if (freqMinutes <= 0) freqMinutes = 360L;
+        long ticks = freqMinutes * 60L * 20L;
 
-                int code = conn.getResponseCode();
-                if (code == 404) {
-                    plugin.getLogger().info("[Update] Project not found on Modrinth (ID: " + projectId + ").");
-                    return;
+        // First check after 1 second, then every freqMinutes
+        task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::check, 20L, ticks);
+
+        // Notify ops that join while an update is pending
+        joinListener = new Listener() {
+            @EventHandler
+            public void onJoin(PlayerJoinEvent event) {
+                String latest = lastNotifiedVersion;
+                if (latest == null) return;
+                if (latest.equals(plugin.getDescription().getVersion())) return;
+
+                Player p = event.getPlayer();
+                if (p.isOp() || p.hasPermission("mythictools.update-notify")) {
+                    Bukkit.getScheduler().runTaskLater(plugin,
+                            () -> sendClickable(p, latest), 20L);
                 }
-                if (code != 200) {
-                    plugin.getLogger().warning("[Update] Modrinth returned HTTP " + code + ".");
-                    return;
-                }
-
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-                    String body = reader.lines().collect(Collectors.joining());
-                    Matcher m = VERSION_PATTERN.matcher(body);
-                    if (!m.find()) { plugin.getLogger().info("[Update] Could not parse Modrinth response."); return; }
-                    latestVersion = m.group(1);
-                }
-
-                outdated = !currentVersion.equalsIgnoreCase(latestVersion);
-                if (outdated) {
-                    plugin.getLogger().warning("══════════════════════════════════════════");
-                    plugin.getLogger().warning("  MythicTools " + latestVersion + " is available!");
-                    plugin.getLogger().warning("  Current: " + currentVersion);
-                    plugin.getLogger().warning("  https://modrinth.com/plugin/" + projectId);
-                    plugin.getLogger().warning("══════════════════════════════════════════");
-                } else {
-                    plugin.getLogger().info("[Update] MythicTools is up to date (" + currentVersion + ").");
-                }
-
-            } catch (Exception e) {
-                plugin.getLogger().warning("[Update] Could not check for updates: " + e.getMessage());
             }
-        });
+        };
+        Bukkit.getPluginManager().registerEvents(joinListener, plugin);
     }
 
-    @EventHandler
-    public void onOpJoin(PlayerJoinEvent event) {
-        if (!outdated || latestVersion == null) return;
-        Player player = event.getPlayer();
-        if (!player.hasPermission("mythictools.update-notify")) return;
-        // Delay 1 tick so the join message doesn't interfere
-        plugin.getServer().getScheduler().runTaskLater(plugin, () ->
-                player.sendMessage("§8[§dMythicTools§8] §eUpdate available: §f" + latestVersion
-                        + " §e(current: §f" + currentVersion + "§e) — "
-                        + "§bmodrinth.com/plugin/" + projectId), 20L);
+    public void stop() {
+        if (task != null)         { task.cancel(); task = null; }
+        if (joinListener != null) { HandlerList.unregisterAll(joinListener); joinListener = null; }
+    }
+
+    // ── Core check ────────────────────────────────────────────────────────
+
+    private void check() {
+        try {
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(String.format(API_URL, projectId)))
+                    .timeout(Duration.ofSeconds(10))
+                    .header("User-Agent", "MythicTools/" + plugin.getDescription().getVersion()
+                            + " (github.com/blackowlzz/MythicTools)")
+                    .GET().build();
+
+            HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+
+            if (resp.statusCode() == 404) {
+                plugin.getLogger().info("[Update] Project not found on Modrinth (id: " + projectId + ").");
+                return;
+            }
+            if (resp.statusCode() != 200) {
+                plugin.getLogger().warning("[Update] Modrinth returned HTTP " + resp.statusCode() + ".");
+                return;
+            }
+
+            // Find the entry with the most recent date_published
+            JsonArray versions = JsonParser.parseString(resp.body()).getAsJsonArray();
+            JsonObject latest   = null;
+            Instant latestDate  = Instant.MIN;
+
+            for (JsonElement el : versions) {
+                if (!el.isJsonObject()) continue;
+                JsonObject candidate = el.getAsJsonObject();
+                if (!candidate.has("version_number")) continue;
+
+                Instant published = Instant.MIN;
+                if (candidate.has("date_published")) {
+                    try { published = Instant.parse(candidate.get("date_published").getAsString()); }
+                    catch (DateTimeParseException ignored) {}
+                }
+                if (latest == null || published.isAfter(latestDate)) {
+                    latest     = candidate;
+                    latestDate = published;
+                }
+            }
+
+            if (latest == null) return;
+
+            String latestVer  = latest.get("version_number").getAsString();
+            String currentVer = plugin.getDescription().getVersion();
+
+            if (latestVer.equals(currentVer)) {
+                lastNotifiedVersion = null;
+                plugin.getLogger().info("[Update] MythicTools is up to date (" + currentVer + ").");
+                return;
+            }
+            if (latestVer.equals(lastNotifiedVersion)) return; // already notified
+
+            lastNotifiedVersion = latestVer;
+            String url = String.format(PAGE_URL, projectId);
+
+            // Console warning (plain text)
+            plugin.getLogger().warning("===========================================");
+            plugin.getLogger().warning("  MythicTools " + latestVer + " is available!");
+            plugin.getLogger().warning("  You are on: " + currentVer);
+            plugin.getLogger().warning("  " + url);
+            plugin.getLogger().warning("===========================================");
+
+            // Notify all online ops / players with permission
+            Bukkit.getOnlinePlayers().stream()
+                    .filter(p -> p.isOp() || p.hasPermission("mythictools.update-notify"))
+                    .forEach(p -> Bukkit.getScheduler().runTask(plugin, () -> sendClickable(p, latestVer)));
+
+        } catch (Exception e) {
+            plugin.getLogger().warning("[Update] Check failed: " + e.getMessage());
+        }
+    }
+
+    // ── Clickable chat component ──────────────────────────────────────────
+
+    private void sendClickable(Player p, String latestVer) {
+        String currentVer = plugin.getDescription().getVersion();
+        String url        = String.format(PAGE_URL, projectId);
+
+        String body = "§8[§dMythicTools§8] §eNew version §f" + latestVer
+                + " §eis available §8(§7current: §f" + currentVer + "§8)§e. Download: ";
+
+        BaseComponent[] bodyParts = TextComponent.fromLegacyText(body);
+
+        TextComponent link = new TextComponent(url);
+        link.setColor(ChatColor.AQUA);
+        link.setUnderlined(true);
+        link.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+        link.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                TextComponent.fromLegacyText("§7Click to open Modrinth page")));
+
+        BaseComponent[] full = new BaseComponent[bodyParts.length + 1];
+        System.arraycopy(bodyParts, 0, full, 0, bodyParts.length);
+        full[bodyParts.length] = link;
+
+        p.spigot().sendMessage(full);
     }
 }

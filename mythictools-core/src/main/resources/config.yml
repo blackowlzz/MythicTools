@@ -18,3 +18,5 @@ expiry:
 update-check:
   enabled: true
   modrinth-project-id: "mythictools"
+  # How often to check for updates (minutes). Default: every 6 hours.
+  frequency-minutes: 360
