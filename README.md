@@ -41,7 +41,7 @@ A Paper Minecraft plugin that adds **mythic tools** with special abilities. Brea
 2. Drop `MythicTools-x.x.x.jar` into your `plugins/` folder
 3. Install dependencies (soft-deps, optional):
    - [Vault](https://www.spigotmc.org/resources/vault.34315/) — Required for `/mt` sell chest to work
-   - [ShopGUI+](https://www.spigotmc.org/resources/shopgui.13828/), [EconomyShopGUI](https://www.spigotmc.org/resources/economyshopgui.93571/), or [EssentialsX](https://essentialsx.net/) — For dynamic item pricing
+   - [ShopGUI+](https://www.spigotmc.org/resources/shopgui-1-8-1-21.6515/), [EconomyShopGUI](https://www.spigotmc.org/resources/economyshopgui.69927/), or [EssentialsX](https://essentialsx.net/) — For dynamic item pricing
 4. Restart server
 5. Customize `plugins/MythicTools/config.yml` and `tools.yml`
 
