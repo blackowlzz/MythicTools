@@ -79,8 +79,8 @@ git branch -M main
 
 Write-Host ""
 Write-Host "Pushing to GitHub..." -ForegroundColor Cyan
-Write-Host "Running: git push -u origin main" -ForegroundColor Gray
-git push -u origin main
+Write-Host "Running: git push -u origin main --force" -ForegroundColor Gray
+git push -u origin main --force
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host ""
